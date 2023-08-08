@@ -63,9 +63,9 @@ class triangle:
                 return None
 
 # Check Cases
-r = ray(vector(0,0,0), vector(1,4,2), math.inf)
-x = triangle(vector(10,-5,4), vector(6,7,8), vector(-2,1,-1))
-print(x.intersect(r))
+# r = ray(vector(0,0,0), vector(1,1,0), math.inf)
+# x = triangle(vector(5,1,0), vector(-2,6,0), vector(2,10,0))
+# print(x.intersect(r))
 
 
 
