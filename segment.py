@@ -1,77 +1,9 @@
 import math
 import os
+from vector import vector, ray, intersection
 
 err_tol = 1e-7
 
-# definition and properties of vectors
-class vector:
-    def __init__(self, x: float, y: float, z: float):
-        self.x = x
-        self.y = y
-        self.z = z        
-    def getx(self):
-        return self.x
-    def gety(self):
-        return self.y
-    def getz(self):
-        return self.z
-    def dot(self, v: 'vector'):
-        return (self.x * v.x + self.y * v.y + self.z * v.z)
-    def cross(self, v: 'vector'):
-        return vector(self.y * v.z - v.y * self.z,
-                      v.x * self.z - self.x * v.z,
-                      self.x * v.y - v.x * self.y)
-    def length(self):
-        return (math.sqrt(self.x**2 + self.y**2 + self.z**2))
-    def __eq__(self, v: 'vector'):
-        return (math.isclose(self.x, v.x, rel_tol = 0, abs_tol = err_tol)
-                and math.isclose(self.y, v.y, rel_tol = 0, abs_tol = err_tol)
-                and math.isclose(self.z, v.z, rel_tol = 0, abs_tol = err_tol))
-    def iszero(self):
-        return self == vector(0.0, 0.0, 0.0)
-    def __add__(self, v):
-        if isinstance(v, float):
-            return vector(self.x + v, self.y + v, self.z + v)
-        elif isinstance(v, vector):
-            return vector(self.x + v.x, self.y + v.y, self.z + v.z)
-        else:
-            raise TypeError('add: Not float or vector')
-    def __radd__(self, v):
-        if isinstance(v, float):
-            return vector(self.x + v, self.y + v, self.z + v)
-        elif isinstance(v, vector):
-            return vector(self.x + v.x, self.y + v.y, self.z + v.z)
-        else:
-            raise TypeError('add: Not float or vector')
-    def __sub__(self, v):
-        if isinstance(v, float):
-            return vector(self.x - v, self.y - v, self.z - v)
-        elif isinstance(v, vector):
-            return vector(self.x - v.x, self.y - v.y, self.z - v.z)
-        else:
-            raise TypeError('subtract: Not float or vector')
-    def __mul__(self, v: float):
-        return vector(v * self.x, v * self.y, v * self.z)
-    def __rmul__(self, v: float):
-        return vector(v * self.x, v * self.y, v * self.z)
-    def __truediv__(self, v: float):
-        if (math.isclose(v, 0, rel_tol = 0, abs_tol = err_tol)):
-            raise ValueError('division: Division by 0')
-        else:
-            return vector(self.x / v, self.y / v, self.z/ v)
-    def __str__(self):
-        return "({0}, {1}, {2})".format(self.x, self.y, self.z)
-
-# definition of ray
-class ray:
-    def __init__(self, origin: vector, dir: vector, len: float):
-        self.origin = origin
-        self.dir = dir
-        self.length = len
-        self.end = origin + (dir / dir.length()) * len
-    def __str__(self):
-        return "origin: {0}, dir: {1} of length {2}".format(self.origin, self.dir, self.length)
-        
 # definition of segment
 class segment:
     def __init__(self, start: vector, end: vector):
@@ -105,33 +37,37 @@ class segment:
                 tea = (self.start - r.end).getz() / r.dir.getz()
                 teb = (self.end - r.end).getz() / r.dir.getz()
             else:
-                return "None: ray has no direction"
+                # None: ray has no direction
+                return None
             if (not (r.origin + r.dir * toa == self.start)):
-                return "None: segment and ray are parallel separate"
+                # None: segment and ray are parallel separate
+                return None
             # segment and ray overlap so find closest intersection if exist
             if (math.isclose(toa, 0, rel_tol = 0, abs_tol = err_tol)
                 or math.isclose(tob, 0, rel_tol = 0, abs_tol = err_tol)):
-                return "{0} at length {1}".format(r.origin, 0.0)
+                return intersection(r.origin, 0.0)
             elif (toa < 0 and tob < 0):
-                return 'None: segment is behind ray'
+                # None: segment is behind ray
+                return None
             elif (toa < 0 or tob < 0):
-                return "{0} at length {1}".format(r.origin, 0.0)
+                return intersection(r.origin, 0.0)
             elif ((not math.isclose(tea, 0, rel_tol = 0, abs_tol = err_tol))
                   and (not math.isclose(teb, 0, rel_tol = 0, abs_tol = err_tol))
                   and tea < 0 and teb < 0):
                 if (toa < tob):
-                    return "{0} at length {1}".format(self.start, toa)
+                    return intersection(self.start, toa)
                 else:
-                    return "{0} at length {1}".format(self.end, tob)
+                    return intersection(self.end, tob)
             elif tea < 0:
-                return "{0} at length {1}".format(self.start, toa)
+                return intersection(self.start, toa)
             elif teb < 0:
-                return "{0} at length {1}".format(self.end, tob)
+                return intersection(self.end, tob)
             elif (math.isclose(tea, 0, rel_tol = 0, abs_tol = err_tol)
                   or math.isclose(teb, 0, rel_tol = 0, abs_tol = err_tol)):
-                return "{0} at length {1}".format(r.end, r.length / r.dir.length())
+                return intersection(r.end, r.length / r.dir.length())
             else:
-                return "None: segment is far in front of ray"
+                # None: segment is far in front of ray
+                return None
         else:
             result = r.origin - self.start
             
@@ -152,20 +88,24 @@ class segment:
             if (not math.isclose(detDa, 0, rel_tol = 0, abs_tol = err_tol)):
                 s = detSa / detDa
                 t = detTa / detDa
+                # None: segment is skew (3D)
                 if (not math.isclose(result.getz(), line_dir.getz() * s - r.dir.getz() * t, rel_tol = 0, abs_tol = err_tol)):
-                    return "None: segment is skew (3D)"
+                    return None
             elif (not math.isclose(detDb, 0, rel_tol = 0, abs_tol = err_tol)):
                 s = detSb / detDb
                 t = detTb / detDb
+                # None: segment is skew (3D)
                 if (not math.isclose(result.gety(), line_dir.gety() * s - r.dir.gety() * t, rel_tol = 0, abs_tol = err_tol)):
-                    return "None: segment is skew (3D)"
+                    return None
             elif (not math.isclose(detDc, 0, rel_tol = 0, abs_tol = err_tol)):
                 s = detSc / detDc
                 t = detTc / detDc
+                # None: segment is skew (3D)
                 if (not math.isclose(result.getx(), line_dir.getx() * s - r.dir.getx() * t, rel_tol = 0, abs_tol = err_tol)):
-                    return "None: segment is skew (3D)"
+                    return None
             else:
-                return "None: segment is skew (2D projection)"
+                # None: segment is skew (2D projection)
+                return None
             # segment and ray intersect so check if intersection lies in segment
             if ((math.isclose(s, 0, rel_tol = 0, abs_tol = err_tol)
                     or math.isclose(s, 1, rel_tol = 0, abs_tol = err_tol)
@@ -173,9 +113,10 @@ class segment:
                 and (math.isclose(t, 0, rel_tol = 0, abs_tol = err_tol)
                         or math.isclose(t, r.length, rel_tol = 0, abs_tol = err_tol)
                         or (t > 0 and t < r.length))):
-                return "{0} at length {1}".format(r.origin + r.dir * t, t)
+                return intersection(r.origin + r.dir * t, t)
             else:
-                return "None: intersection not in segment"
+                # None: intersection not in segment
+                return None
 
 
 
