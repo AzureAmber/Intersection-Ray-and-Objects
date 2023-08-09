@@ -46,6 +46,7 @@ class quad:
         return final_point
 
 # Check Cases
+
 # r = ray(vector(0,0,0), vector(1,1,0), math.inf)
 # x = quad(vector(5,1,0), vector(-2,4,0), vector(3,8,0), vector(4,7,0))
 # print(x.intersect(r))

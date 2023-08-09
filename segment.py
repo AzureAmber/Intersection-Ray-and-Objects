@@ -15,7 +15,7 @@ class segment:
     def intersect(self, r: ray):
         # check if ray and segment are parallel
         line_dir = self.end - self.start
-        if (line_dir.cross(r.dir).iszero()):
+        if (line_dir.isparallel(r.dir)):
             # check if segment and ray are separate
             toa = 0
             tob = 0
@@ -121,6 +121,7 @@ class segment:
 
 
 # Check Cases
+
 # parallel separate
 # r = ray(vector(0,0,0), vector(1,1,2), math.inf)
 # s = segment(vector(2, 3, 4), vector(0, 1, 0))
