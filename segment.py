@@ -1,6 +1,7 @@
 import math
 import os
 from vector import vector, ray, intersection
+from line import line
 
 err_tol = 1e-7
 
@@ -11,35 +12,17 @@ class segment:
         self.end = end
     def __str__(self):
         return "start: {0}, end: {1}".format(self.start, self.end)
-    # intersection between ray and segment
     def intersect(self, r: ray):
         # check if ray and segment are parallel
         line_dir = self.end - self.start
         if (line_dir.isparallel(r.dir)):
             # check if segment and ray are separate
-            toa = 0
-            tob = 0
-            tea = 0
-            teb = 0
-            if (not math.isclose(r.dir.getx(), 0, rel_tol = 0, abs_tol = err_tol)):
-                toa = (self.start - r.origin).getx() / r.dir.getx()
-                tob = (self.end - r.origin).getx() / r.dir.getx()
-                tea = (self.start - r.end).getx() / r.dir.getx()
-                teb = (self.end - r.end).getx() / r.dir.getx()
-            elif (not math.isclose(r.dir.gety(), 0, rel_tol = 0, abs_tol = err_tol)):
-                toa = (self.start - r.origin).gety() / r.dir.gety()
-                tob = (self.end - r.origin).gety() / r.dir.gety()
-                tea = (self.start - r.end).gety() / r.dir.gety()
-                teb = (self.end - r.end).gety() / r.dir.gety()
-            elif (not math.isclose(r.dir.getz(), 0, rel_tol = 0, abs_tol = err_tol)):
-                toa = (self.start - r.origin).getz() / r.dir.getz()
-                tob = (self.end - r.origin).getz() / r.dir.getz()
-                tea = (self.start - r.end).getz() / r.dir.getz()
-                teb = (self.end - r.end).getz() / r.dir.getz()
-            else:
-                # None: ray has no direction
-                return None
-            if (not (r.origin + r.dir * toa == self.start)):
+            r_line = line(r.origin, r.dir)
+            toa = r_line.inline(r.origin, self.start)
+            tob = r_line.inline(r.origin, self.end)
+            tea = r_line.inline(r.end, self.start)
+            teb = r_line.inline(r.end, self.end)
+            if (toa is None):
                 # None: segment and ray are parallel separate
                 return None
             # segment and ray overlap so find closest intersection if exist
@@ -69,53 +52,20 @@ class segment:
                 # None: segment is far in front of ray
                 return None
         else:
-            result = r.origin - self.start
-            
-            detDa = -1.0 * line_dir.getx() * r.dir.gety() + line_dir.gety() * r.dir.getx()
-            detSa = -1.0 * result.getx() * r.dir.gety() + result.gety() * r.dir.getx()
-            detTa = line_dir.getx() * result.gety() - line_dir.gety() * result.getx()
-            
-            detDb = -1.0 * line_dir.getx() * r.dir.getz() + line_dir.getz() * r.dir.getx()
-            detSb = -1.0 * result.getx() * r.dir.getz() + result.getz() * r.dir.getx()
-            detTb = line_dir.getx() * result.getz() - line_dir.getz() * result.getx()
-            
-            detDc = -1.0 * line_dir.gety() * r.dir.getz() + line_dir.getz() * r.dir.gety()
-            detSc = -1.0 * result.gety() * r.dir.getz() + result.getz() * r.dir.gety()
-            detTc = line_dir.gety() * result.getz() - line_dir.getz() * result.gety()
-            # check if segment and ray are skew = no intersection
-            s = 0
-            t = 0
-            if (not math.isclose(detDa, 0, rel_tol = 0, abs_tol = err_tol)):
-                s = detSa / detDa
-                t = detTa / detDa
-                # None: segment is skew (3D)
-                if (not math.isclose(result.getz(), line_dir.getz() * s - r.dir.getz() * t, rel_tol = 0, abs_tol = err_tol)):
-                    return None
-            elif (not math.isclose(detDb, 0, rel_tol = 0, abs_tol = err_tol)):
-                s = detSb / detDb
-                t = detTb / detDb
-                # None: segment is skew (3D)
-                if (not math.isclose(result.gety(), line_dir.gety() * s - r.dir.gety() * t, rel_tol = 0, abs_tol = err_tol)):
-                    return None
-            elif (not math.isclose(detDc, 0, rel_tol = 0, abs_tol = err_tol)):
-                s = detSc / detDc
-                t = detTc / detDc
-                # None: segment is skew (3D)
-                if (not math.isclose(result.getx(), line_dir.getx() * s - r.dir.getx() * t, rel_tol = 0, abs_tol = err_tol)):
-                    return None
-            else:
-                # None: segment is skew (2D projection)
-                return None
-            # segment and ray intersect so check if intersection lies in segment
-            if ((math.isclose(s, 0, rel_tol = 0, abs_tol = err_tol)
+            # ray and segment are skew or intersect
+            seg_line = line(self.start, line_dir)
+            seg_line_intersect = seg_line.intersect(r)
+            # check if ray and line containing segment intersect
+            if (seg_line_intersect is not None):
+                # intersection exist in line containing segment so check if intersection lies in segment
+                s = seg_line.inline(self.start, seg_line_intersect.getpoint())
+                if (math.isclose(s, 0, rel_tol = 0, abs_tol = err_tol)
                     or math.isclose(s, 1, rel_tol = 0, abs_tol = err_tol)
-                    or (s > 0 and s < 1))
-                and (math.isclose(t, 0, rel_tol = 0, abs_tol = err_tol)
-                        or math.isclose(t, r.length, rel_tol = 0, abs_tol = err_tol)
-                        or (t > 0 and t < r.length))):
-                return intersection(r.origin + r.dir * t, t)
+                    or (s > 0 and s < 1)):
+                    return seg_line_intersect
+                else:
+                    return None
             else:
-                # None: intersection not in segment
                 return None
 
 
@@ -184,21 +134,21 @@ class segment:
 
 # hit diagonal
 # (1,2,3) - (2.1, 4.2, 2.1) + (2,4,6)
-# r = ray(vector(0,0,0), vector(1,2,1), 5)
+# r = ray(vector(0,0,0), vector(1,2,1), 10)
 # s = segment(vector(1.1, 2.2, -0.9), vector(4.1, 8.2, 8.1))
 # print(s.intersect(r))
 
 # not hit diagonal (segment not on sight)
 # (2.1, 4.2, 2.1) + (2,4,6) + (5,10,15)
-# r = ray(vector(0,0,0), vector(1,2,1), 5)
+# r = ray(vector(0,0,0), vector(1,2,1), math.inf)
 # s = segment(vector(4.1, 8.2, 8.2), vector(7.1, 14.2, 17.1))
 # print(s.intersect(r))
 
 # not hit diagonal (segment too far away)
 # (1,2,3) - (6.5, 13, 6.5) + (2,4,6)
-# r = ray(vector(0,0,0), vector(1,2,1), 5)
-# s = segment(vector(5.5, 11, 3.5), vector(8.5, 17, 12.5))
-# print(s.intersect(r))
+r = ray(vector(0,0,0), vector(1,2,1), 5)
+s = segment(vector(5.5, 11, 3.5), vector(8.5, 17, 12.5))
+print(s.intersect(r))
 
 
 

@@ -86,7 +86,7 @@ class intersection:
     def getlength(self):
         return self.length
     def __str__(self):
-        return "point: {0}, length: {1}".format(self.point, self.length)
+        return "point: {0}, t: {1}".format(self.point, self.length)
 
 
 

@@ -23,7 +23,6 @@ class circle:
                 and (math.isclose((p - self.center).length(), self.radius, rel_tol = 0, abs_tol = err_tol) or (p - self.center).length() < self.radius))
     def intersect(self, r: ray):
         # check if plane containing circle and ray are parallel
-        circ_plane = plane(self.center, self.normal)
         if (self.normal.isorthogonal(r.dir)):
             # find intersection between sphere and ray if exist
             circ_sphere_intersect = sphere(self.center, self.radius).intersect(r)
@@ -37,6 +36,7 @@ class circle:
                 return None
         else:
             # plane containing circle and ray intersect so find intersection
+            circ_plane = plane(self.center, self.normal)
             circ_plane_intersect = circ_plane.intersect(r)
             # check if intersection is inside circle
             if (self.incircle(circ_plane_intersect.getpoint())):

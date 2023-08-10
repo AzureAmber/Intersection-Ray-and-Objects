@@ -33,7 +33,8 @@ class sphere:
                 return None
             elif (first_t > 0 and second_t > 0):
                 final_t = min(first_t, second_t)
-                if (math.isclose(final_t, r.length, rel_tol = 0, abs_tol = err_tol) or final_t < r.length):
+                if (math.isclose(final_t, r.length / r.dir.length(), rel_tol = 0, abs_tol = err_tol)
+                    or final_t < r.length / r.dir.length()):
                     # sphere is reachable by ray
                     return intersection(r.origin + r.dir * final_t, final_t)
                 else:

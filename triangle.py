@@ -47,14 +47,12 @@ class triangle:
                 # None: plane containing triangle and ray are parallel
                 return None
         else:
-            # ray and plane containing triangle are skew so find intersection
+            # ray and plane containing triangle intersect
             tri_plane_intersect = tri_plane.intersect(r)
             # check if ray reaches intersection
             if (tri_plane_intersect is not None):
-                t = tri_plane_intersect.getlength()
-                final_point = tri_plane_intersect.getpoint()
                 # check if intersection is inside triangle
-                if (self.intriangle(final_point)):
+                if (self.intriangle(tri_plane_intersect.getpoint())):
                     return tri_plane_intersect
                 else:
                     return None

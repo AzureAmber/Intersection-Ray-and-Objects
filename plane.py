@@ -27,8 +27,8 @@ class plane:
             t = self.normal.dot(self.point - r.origin) / self.normal.dot(r.dir)
             # check if intersection is reachable by ray
             if (math.isclose(t, 0.0, rel_tol = 0, abs_tol = err_tol)
-                or math.isclose(t, r.length, rel_tol = 0, abs_tol = err_tol)
-                or (t > 0 and t < r.length)):
+                or math.isclose(t, r.length / r.dir.length(), rel_tol = 0, abs_tol = err_tol)
+                or (t > 0 and t < r.length / r.dir.length())):
                 return intersection(r.origin + r.dir * t, t)
             else:
                 return None
