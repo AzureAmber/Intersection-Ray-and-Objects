@@ -40,7 +40,7 @@ class quad:
         # find closest intersection if exist
         final_point = first_tri.intersect(r)                    
         second_point = second_tri.intersect(r)
-        if (isinstance(second_point, intersection)):
+        if (second_point is not None):
             if ((final_point is None) or second_point.getlength() < final_point.getlength()):
                 final_point = second_point
         return final_point

@@ -18,6 +18,10 @@ class circle:
         return self.normal
     def getradius(self):
         return self.radius
+    def __str__(self):
+        return "center: {0}, radius: {1}, on plane: {2}x + {3}y + {4}z = {5}".format(self.center, self.radius,
+                                                                                     self.normal.getx(), self.normal.gety(), self.normal.getz(),
+                                                                                     self.normal.dot(self.center))
     def incircle(self, p: vector):
         return (math.isclose(self.normal.dot(p), self.normal.dot(self.center), rel_tol = 0, abs_tol = err_tol)
                 and (math.isclose((p - self.center).length(), self.radius, rel_tol = 0, abs_tol = err_tol) or (p - self.center).length() < self.radius))

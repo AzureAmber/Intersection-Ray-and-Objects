@@ -12,6 +12,13 @@ class segment:
         self.end = end
     def __str__(self):
         return "start: {0}, end: {1}".format(self.start, self.end)
+    def insegment(self, p: vector):
+        # check if point is in line and between segment's endpoints
+        seg_line = line(self.start, self.end - self.start)
+        s = seg_line.inline(self.start, p)
+        return s is not None and (math.isclose(s, 0, rel_tol = 0, abs_tol = err_tol)
+                                  or math.isclose(s, 1, rel_tol = 0, abs_tol = err_tol)
+                                  or (s > 0 and s < 1))
     def intersect(self, r: ray):
         # check if ray and segment are parallel
         line_dir = self.end - self.start
@@ -58,10 +65,7 @@ class segment:
             # check if ray and line containing segment intersect
             if (seg_line_intersect is not None):
                 # intersection exist in line containing segment so check if intersection lies in segment
-                s = seg_line.inline(self.start, seg_line_intersect.getpoint())
-                if (math.isclose(s, 0, rel_tol = 0, abs_tol = err_tol)
-                    or math.isclose(s, 1, rel_tol = 0, abs_tol = err_tol)
-                    or (s > 0 and s < 1)):
+                if (self.insegment(seg_line_intersect.getpoint())):
                     return seg_line_intersect
                 else:
                     return None
@@ -146,9 +150,9 @@ class segment:
 
 # not hit diagonal (segment too far away)
 # (1,2,3) - (6.5, 13, 6.5) + (2,4,6)
-r = ray(vector(0,0,0), vector(1,2,1), 5)
-s = segment(vector(5.5, 11, 3.5), vector(8.5, 17, 12.5))
-print(s.intersect(r))
+# r = ray(vector(0,0,0), vector(1,2,1), 5)
+# s = segment(vector(5.5, 11, 3.5), vector(8.5, 17, 12.5))
+# print(s.intersect(r))
 
 
 
