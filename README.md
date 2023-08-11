@@ -9,10 +9,10 @@ Vector, Ray, Intersection defined in vector.py
 | 2     | Line Segment      | Line                      | Completed     |
 | 3     | Plane             |                           | Completed     |
 | 4     | Triangle          | Segment, Plane            | Completed     |
-| 5     | Quadrilateral     | Segment, Triangle         | Completed     |
+| 5     | Quadrilateral     | Triangle                  | Completed     |
 | 6     | Sphere            |                           | Completed     |
 | 7     | Circle            | Plane, Sphere             | Completed     |
-| 8     | Cylinder          | Line, Circle              | Not Completed |
+| 8     | Cylinder          | Line, Circle              | Completed     |
 
 
 

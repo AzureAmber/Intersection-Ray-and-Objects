@@ -27,7 +27,11 @@ class plane:
                 return None
         else:
             t = self.normal.dot(self.point - r.origin) / self.normal.dot(r.dir)
-            return intersection(r.origin + r.dir * t, t)
+            # check if intersection is in front of ray
+            if (math.isclose(t, 0, rel_tol = 0, abs_tol = err_tol) or t > 0):    
+                return intersection(r.origin + r.dir * t, t)
+            else:
+                return None
     # Similar to intersect, but return None if intersection is less than ray's length
     def bounded_intersect(self, r: ray):
         return r.reachable(self.intersect(r))

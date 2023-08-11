@@ -1,7 +1,6 @@
 import math
 import os
 from vector import vector, intersection, ray, test_intersection
-from segment import segment
 from triangle import triangle
 
 err_tol = 1e-7

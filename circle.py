@@ -41,12 +41,15 @@ class circle:
             else:
                 return None
         else:
-            # plane containing circle and ray intersect so find intersection
+            # plane containing circle and ray intersect so find intersection if exist
             circ_plane = plane(self.center, self.normal)
             circ_plane_intersect = circ_plane.intersect(r)
             # check if intersection is inside circle
-            if (self.incircle(circ_plane_intersect.getpoint())):
-                return circ_plane_intersect
+            if (circ_plane_intersect is not None):
+                if (self.incircle(circ_plane_intersect.getpoint())):
+                    return circ_plane_intersect
+                else:
+                    return None
             else:
                 return None
     # Similar to intersect, but return None if intersection is less than ray's length

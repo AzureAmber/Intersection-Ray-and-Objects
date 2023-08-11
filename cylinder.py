@@ -15,6 +15,7 @@ class cylinder:
         self.height = height
     def __str__(self):
         return "center: {0}+{1}t, radius: {2}, height: {3}".format(self.center, self.normal, self.radius, self.height)
+    # Return True if point p is inside cylinder else return False
     def incylinder(self, p: vector):
         # check if point is less than radius away from cylinder's center axis
         center_axis = line(self.center, self.normal)
@@ -28,6 +29,7 @@ class cylinder:
                        or math.isclose(point_bound, second_bound, rel_tol = 0, abs_tol = err_tol)
                        or (point_bound > first_bound and point_bound < second_bound))
         return check_dist and check_bound
+    # If ray and cylinder intersect, return intersection else return None
     def intersect(self, r: ray):
         # check if ray is inside cylinder
         if (self.incylinder(r.origin)):
@@ -46,7 +48,7 @@ class cylinder:
                 return final_point
             else:
                 # find intersection between ray and cylinder's lateral surface (infinite version) if exist
-                v = self.normal.dot(self.normal) * (r.origin - self.center) - (self.normal.dot(r.dir) + self.normal.dot(self.center)) * self.normal
+                v = self.normal.dot(self.normal) * (r.origin - self.center) + self.normal.dot(self.center - r.origin) * self.normal
                 cyl_A = self.normal.dot(self.normal) * (self.normal.dot(self.normal) * r.dir.dot(r.dir) - (self.normal.dot(r.dir))**2)
                 cyl_B = 2.0 * self.normal.dot(self.normal) * v.dot(r.dir) - 2.0 * self.normal.dot(r.dir) * self.normal.dot(v)
                 cyl_C = v.dot(v) - (self.radius * self.normal.dot(self.normal))**2
@@ -59,14 +61,12 @@ class cylinder:
                     lateral_final_point = None
                     if (math.isclose(first_t, 0, rel_tol = 0, abs_tol = err_tol) or first_t > 0):
                         # check if intersection is on cylinder's lateral and reachable
-                        if (self.incylinder(r.origin + r.dir * first_t)
-                            and (math.isclose(first_t, r.length / r.dir.length(), rel_tol = 0, abs_tol = err_tol) or first_t < r.length / r.dir.length())):
+                        if (self.incylinder(r.origin + r.dir * first_t)):
                             lateral_final_point = intersection(r.origin + r.dir * first_t, first_t)
                     lateral_second_point = None
                     if (math.isclose(second_t, 0, rel_tol = 0, abs_tol = err_tol) or second_t > 0):
                         # check if intersection is on cylinder's lateral and reachable
-                        if (self.incylinder(r.origin + r.dir * second_t)
-                            and (math.isclose(second_t, r.length / r.dir.length(), rel_tol = 0, abs_tol = err_tol) or second_t < r.length / r.dir.length())):
+                        if (self.incylinder(r.origin + r.dir * second_t)):
                             lateral_second_point = intersection(r.origin + r.dir * second_t, second_t)
                     if (lateral_second_point is not None):
                         if ((lateral_final_point is None) or lateral_second_point.getlength() < lateral_final_point.getlength()):
@@ -78,30 +78,41 @@ class cylinder:
                     return final_point
                 else:
                     return final_point
+    # Similar to intersect, but return None if intersection is less than ray's length
+    def bounded_intersect(self, r: ray):
+        return r.reachable(self.intersect(r))
             
-
 # check cases
 
 # ray in cylinder
-r = ray(vector(1,0,2.5), vector(0,0,1), 0.2)
-x = cylinder(vector(0,0,3), vector(0,0,2), 2, 5)
-print(x.intersect(r))
+# r = ray(vector(1,0,7), vector(0,0,1), 2.5)
+# x = cylinder(vector(0,0,3), vector(0,0,2), 2, 5)
+# tc = test_intersection(1, r, x)
+# print(tc)
 
 # ray intersects circle bases only
-# r = ray(vector(0,0,0), vector(0,0,1), math.inf)
+# r = ray(vector(1,0,0), vector(0,0,1), math.inf)
 # x = cylinder(vector(0,0,3), vector(0,0,2), 2, 5)
-# print(x.intersect(r))
+# tc = test_intersection(2, r, x)
+# print(tc)
 
 # ray intersect lateral only
-
+# r = ray(vector(0,-4,-3), vector(0,1,1), math.inf)
+# x = cylinder(vector(0,0,-5), vector(0,0,1), 2, 11)
+# tc = test_intersection(3, r, x)
+# print(tc)
 
 # ray intersects both circle bases and lateral
-
+# r = ray(vector(0,-4,-3), vector(0,1,4), 8)
+# x = cylinder(vector(0,0,-5), vector(0,0,1), 2, 11)
+# tc = test_intersection(4, r, x)
+# print(tc)
 
 # no intersection
-
-
-
+# r = ray(vector(0,-4,-3), vector(0,1,5), math.inf)
+# x = cylinder(vector(0,0,-5), vector(0,0,1), 2, 11)
+# tc = test_intersection(5, r, x)
+# print(tc)
 
 
 
