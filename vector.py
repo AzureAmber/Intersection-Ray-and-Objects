@@ -66,16 +66,6 @@ class vector:
     def __str__(self):
         return "({0}, {1}, {2})".format(self.x, self.y, self.z)
 
-# definition of ray
-class ray:
-    def __init__(self, origin: vector, dir: vector, len: float):
-        self.origin = origin
-        self.dir = dir
-        self.length = len
-        self.end = origin + (dir / dir.length()) * len
-    def __str__(self):
-        return "origin: {0}, dir: {1} of length {2}".format(self.origin, self.dir, self.length)
-
 # definition of intersection
 class intersection:
     def __init__(self, point: vector, len: float):
@@ -87,6 +77,39 @@ class intersection:
         return self.length
     def __str__(self):
         return "point: {0}, t: {1}".format(self.point, self.length)
+
+# definition of ray
+class ray:
+    def __init__(self, origin: vector, dir: vector, len: float):
+        self.origin = origin
+        self.dir = dir
+        self.length = len
+        self.end = origin + (dir / dir.length()) * len
+    # If intersection is within [0, ray.length], return intersection else return None
+    def reachable(self, x):
+        if (x is not None):
+            t = x.getlength()
+            if (math.isclose(t, 0, rel_tol = 0, abs_tol = err_tol)
+                or math.isclose(t, self.length / self.dir.length(), rel_tol = 0, abs_tol = err_tol)
+                or (t > 0 and t < self.length / self.dir.length())):
+                return x
+            else:
+                return None
+        else:
+            return None
+    def __str__(self):
+        return "origin: {0}, dir: {1} of length {2}".format(self.origin, self.dir, self.length)
+    
+# definition of ray and object intersection test case
+class test_intersection:
+    def __init__(self, name: float, r: ray, geo_object):
+        self.name = name
+        self.r = r
+        self.geo_object = geo_object
+        self.point_inf = geo_object.intersect(r)
+        self.point_fin = r.reachable(self.point_inf)
+    def __str__(self):
+        return "Test case: {0}\n\tIntersection: {1}\n\tReachable: {2}".format(self.name, self.point_inf, self.point_fin)
 
 
 

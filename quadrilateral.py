@@ -1,6 +1,6 @@
 import math
 import os
-from vector import vector, ray, intersection
+from vector import vector, intersection, ray, test_intersection
 from segment import segment
 from triangle import triangle
 
@@ -15,6 +15,7 @@ class quad:
         self.pointD = pointD
     def __str__(self):
         return "A: {0}, B: {1}, C: {2}, D: {3}".format(self.pointA, self.pointB, self.pointC, self.pointD)
+    # If ray and quadrilateral intersect, return intersection else return None
     def intersect(self, r: ray):
         # split quadrilateral at the >180 angle if exist
         Angle_a = math.acos((self.pointD - self.pointA).dot(self.pointB - self.pointA) /
@@ -44,12 +45,16 @@ class quad:
             if ((final_point is None) or second_point.getlength() < final_point.getlength()):
                 final_point = second_point
         return final_point
+    # Similar to intersect, but return None if intersection is less than ray's length
+    def bounded_intersect(self, r: ray):
+        return r.reachable(self.intersect(r))
 
 # Check Cases
 
 # r = ray(vector(0,0,0), vector(1,1,0), math.inf)
 # x = quad(vector(5,1,0), vector(-2,4,0), vector(3,8,0), vector(4,7,0))
-# print(x.intersect(r))
+# tc = test_intersection(1, r, x)
+# print(tc)
 
 
 

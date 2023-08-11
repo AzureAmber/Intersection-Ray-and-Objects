@@ -1,6 +1,6 @@
 import math
 import os
-from vector import vector, ray, intersection
+from vector import vector, intersection, ray, test_intersection
 from plane import plane
 from sphere import sphere
 
@@ -22,9 +22,11 @@ class circle:
         return "center: {0}, radius: {1}, on plane: {2}x + {3}y + {4}z = {5}".format(self.center, self.radius,
                                                                                      self.normal.getx(), self.normal.gety(), self.normal.getz(),
                                                                                      self.normal.dot(self.center))
+    # Return True if point p is inside circle else return False
     def incircle(self, p: vector):
         return (math.isclose(self.normal.dot(p), self.normal.dot(self.center), rel_tol = 0, abs_tol = err_tol)
                 and (math.isclose((p - self.center).length(), self.radius, rel_tol = 0, abs_tol = err_tol) or (p - self.center).length() < self.radius))
+    # If ray and circle intersect, return intersection else return None
     def intersect(self, r: ray):
         # check if plane containing circle and ray are parallel
         if (self.normal.isorthogonal(r.dir)):
@@ -47,20 +49,35 @@ class circle:
                 return circ_plane_intersect
             else:
                 return None
+    # Similar to intersect, but return None if intersection is less than ray's length
+    def bounded_intersect(self, r: ray):
+        return r.reachable(self.intersect(r))
 
 # Check cases
 
 # parallel intersection
 # r = ray(vector(0,0,0), vector(1,0,0), math.inf)
 # x = circle(vector(5,0,0), vector(0,0,1), 2)
-# print(x.intersect(r))
+# tc = test_intersection(1, r, x)
+# print(tc)
 
 # not parallel intersection
-# r = ray(vector(0,0,0), vector(1,1,2), math.inf)
+# r = ray(vector(0,0,0), vector(1,1,2), 1.23)
 # x = circle(vector(5,5,1), vector(0,0,1), 10)
-# print(x.intersect(r))
+# tc = test_intersection(2, r, x)
+# print(tc)
 
+# parallel no intersection
+# r = ray(vector(0,0,0), vector(1,0,0), math.inf)
+# x = circle(vector(1,0,1), vector(0,0,1), 2)
+# tc = test_intersection(3, r, x)
+# print(tc)
 
+# skew
+# r = ray(vector(0,0,0), vector(1,0,0), math.inf)
+# x = circle(vector(1,0,1), vector(1,0,1), 1.42)
+# tc = test_intersection(4, r, x)
+# print(tc)
 
 
 

@@ -1,6 +1,6 @@
 import math
 import os
-from vector import vector, ray, intersection
+from vector import vector, intersection, ray, test_intersection
 
 err_tol = 1e-7
 
@@ -13,6 +13,8 @@ class line:
         return self.dir
     def __str__(self):
         return "{0} + {1}t".format(self.point, self.dir)
+    def distance(self, p: vector):
+        return (self.dir.cross(p - self.point).length()) / self.dir.length()
     # If point is in line, returns a float t where point.line + dir.line * t = point else return None
     def inline(self, line_p: vector, p: vector):
         t = 0
@@ -29,6 +31,7 @@ class line:
             return t
         else:
             return None
+    # If ray intersects line, return intersection else return None
     def intersect(self, r: ray):
         # check if ray and line are parallel
         if (self.dir.isparallel(r.dir)):
@@ -74,32 +77,35 @@ class line:
                 if (not math.isclose(result.getx(), self.dir.getx() * s - r.dir.getx() * t, rel_tol = 0, abs_tol = err_tol)):
                     return None
             else:
-                # None: segment is line (2D projection)
+                # None: line is skew (2D projection)
                 return None
-            # check if line is reachable by ray
-            if (math.isclose(t, 0, rel_tol = 0, abs_tol = err_tol)
-                or math.isclose(t, r.length / r.dir.length(), rel_tol = 0, abs_tol = err_tol)
-                or (t > 0 and t < r.length / r.dir.length())):
-                return intersection(r.origin + r.dir * t, t)
-            else:
-                return None        
+            # line and ray intersect so return intersection
+            return intersection(r.origin + r.dir * t, t)
+    # Similar to intersect, but return None if intersection is less than ray's length
+    def bounded_intersect(self, r: ray):
+        return r.reachable(self.intersect(r))
+        
+        
     
 # check cases
 
 # not parallel intersect
-# r = ray(vector(0,0,0), vector(0,0,1), math.inf)
+# r = ray(vector(0,0,0), vector(0,0,1), 5)
 # x = line(vector(0,-2,5), vector(0,1,1))
-# print(x.intersect(r))
+# tc = test_intersection(1, r, x)
+# print(tc)
 
 # parallel overlap
-# r = ray(vector(0,0,0), vector(0,1,1), math.inf)
+# r = ray(vector(0,0,0), vector(0,1,1), 5)
 # x = line(vector(0,2,2), vector(0,3,3))
-# print(x.intersect(r))
+# tc = test_intersection(2, r, x)
+# print(tc)
 
 # parallel separate
-# r = ray(vector(0,0,0), vector(0,1,1), math.inf)
+# r = ray(vector(0,0,0), vector(0,1,1), 5)
 # x = line(vector(0,2,3), vector(0,3,3))
-# print(x.intersect(r))
+# tc = test_intersection(3, r, x)
+# print(tc)
 
 
 

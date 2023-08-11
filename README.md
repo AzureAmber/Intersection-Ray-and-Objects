@@ -1,17 +1,18 @@
 # Intersection-Ray-and-Objects
 Finding the intersection between a Ray and various Geometric Objects
 
-Vectors, Rays, Intersection defined in vector.py
+Vector, Ray, Intersection defined in vector.py
 
-| Num   | Geometric Objects | Requires Implementation   |
-| :---  | :---------------- | :----------------------   |
-| 1     | Line              |                           |
-| 2     | Line Segment      | Line                      |
-| 3     | Plane             |                           |
-| 4     | Triangle          | Segment, Plane            |
-| 5     | Quadrilateral     | Segment, Triangle         |
-| 6     | Sphere            |                           |
-| 7     | Circle            | Plane, Sphere             |
+| Num   | Geometric Objects | Requires Implementation   | Status        |
+| :---  | :---------------- | :----------------------   | :-----        |
+| 1     | Line              |                           | Completed     |
+| 2     | Line Segment      | Line                      | Completed     |
+| 3     | Plane             |                           | Completed     |
+| 4     | Triangle          | Segment, Plane            | Completed     |
+| 5     | Quadrilateral     | Segment, Triangle         | Completed     |
+| 6     | Sphere            |                           | Completed     |
+| 7     | Circle            | Plane, Sphere             | Completed     |
+| 8     | Cylinder          | Line, Circle              | Not Completed |
 
 
 
