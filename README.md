@@ -13,6 +13,7 @@ Vector, Ray, Intersection defined in vector.py
 | 6     | Sphere            |                           | Completed     |
 | 7     | Circle            | Plane, Sphere             | Completed     |
 | 8     | Cylinder          | Line, Circle              | Completed     |
+| 9     | Cone              | Line, Circle              | Completed     |
 
 
 

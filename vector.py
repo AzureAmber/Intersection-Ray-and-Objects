@@ -33,6 +33,8 @@ class vector:
         return math.isclose(self.dot(v), 0.0, rel_tol = 0, abs_tol = err_tol)
     def isparallel(self, v: 'vector'):
         return (self.cross(v)).iszero()
+    def getangle(self, v: 'vector'):
+        return math.acos(self.dot(v) / (self.length() * v.length()))
     def __add__(self, v):
         if isinstance(v, float):
             return vector(self.x + v, self.y + v, self.z + v)
