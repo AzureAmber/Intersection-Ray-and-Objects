@@ -4,7 +4,7 @@ Finding the intersection between a Ray and various Geometric Objects
 Vector, Ray, Intersection defined in vector.py
 
 | Num   | Geometric Objects         | Requires Implementation   | Status        |
-| :---_ | :------------------------ | :------------------------ | :------------ |
+| :---- | :------------------------ | :------------------------ | :------------ |
 | 1     | Line                      |                           | Completed     |
 | 2     | Line Segment              | Line                      | Completed     |
 | 3     | Plane                     |                           | Completed     |
