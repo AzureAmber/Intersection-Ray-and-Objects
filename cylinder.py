@@ -6,7 +6,7 @@ from circle import circle
 
 err_tol = 1e-7
 
-# definition of cylinder
+# definition of cylinder (filled)
 class cylinder:
     def __init__(self, center: vector, normal: vector, radius: float, height: float):
         self.center = center

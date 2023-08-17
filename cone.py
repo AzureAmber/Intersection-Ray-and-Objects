@@ -6,6 +6,7 @@ from circle import circle
 
 err_tol = 1e-7
 
+# definition of cone (filled)
 class cone:
     def __init__(self, vertex: vector, axis: vector, radius: float, height: float):
         self.vertex = vertex
@@ -22,6 +23,8 @@ class cone:
         return self.radius
     def getheight(self):
         return self.height
+    def __str__(self):
+        return "vertex: {0}, axis of symmetry: {1}, radius: {2}, height: {3}".format(self.vertex, self.axis, self.radius, self.height)
     # Return True if point p is inside cone else return False
     def incone(self, p: vector):
         # check if the point is the cone's vertex
