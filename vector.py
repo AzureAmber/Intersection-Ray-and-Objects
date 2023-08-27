@@ -8,6 +8,17 @@ class matrix:
     # row vectors
     def __init__(self, a, b, c, d):
         self.data = [a, b, c, d]
+    def __mul__(self, m: 'matrix'):
+        result = matrix([0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0])
+        for i in range(4):
+            for j in range(4):
+                cur = 0
+                for k in range(4):
+                    cur = cur + self.data[i][k] * m.data[k][j]
+                result.data[i][j] = cur
+        return result
+    def __str__(self):
+        return("{0}\n{1}\n{2}\n{3}".format(self.data[0], self.data[1], self.data[2], self.data[3]))
 
 # definition and properties of vectors
 class vector:
@@ -135,7 +146,6 @@ class test_intersection:
         self.point_fin = r.reachable(self.point_inf)
     def __str__(self):
         return "Test case: {0}\n\tIntersection: {1}\n\tReachable: {2}".format(self.name, self.point_inf, self.point_fin)
-
 
 
 
