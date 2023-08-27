@@ -3,18 +3,29 @@ import os
 
 err_tol = 1e-7
 
+# definition of matrix
+class matrix:
+    # row vectors
+    def __init__(self, a, b, c, d):
+        self.data = [a, b, c, d]
+
 # definition and properties of vectors
 class vector:
     def __init__(self, x: float, y: float, z: float):
         self.x = x
         self.y = y
-        self.z = z        
+        self.z = z
+        self.w = 1
     def getx(self):
         return self.x
     def gety(self):
         return self.y
     def getz(self):
         return self.z
+    def getw(self):
+        return self.w
+    def setw(self, value: float):
+        self.w = value
     def dot(self, v: 'vector'):
         return (self.x * v.x + self.y * v.y + self.z * v.z)
     def cross(self, v: 'vector'):
@@ -66,7 +77,19 @@ class vector:
         else:
             return vector(self.x / v, self.y / v, self.z/ v)
     def __str__(self):
-        return "({0}, {1}, {2})".format(self.x, self.y, self.z)
+        return "({0}, {1}, {2}, {3})".format(self.x, self.y, self.z, self.w)
+    def matmult(self, M: matrix):
+        mat = M.data
+        v = [self.x, self.y, self.z, self.w]
+        result = [0, 0, 0, 0]
+        for i in range(4):
+            temp = 0
+            for j in range(4):
+                temp = temp + mat[i][j] * v[j]
+            result[i] = temp
+        w = vector(result[0], result[1], result[2])
+        w.setw(result[3])
+        return w
 
 # definition of intersection
 class intersection:
