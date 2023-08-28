@@ -51,6 +51,9 @@ class vector:
                       self.x * v.y - v.x * self.y)
     def length(self):
         return (math.sqrt(self.x**2 + self.y**2 + self.z**2))
+    def normalize(self):
+        mag = self.length()
+        return(vector(self.x / mag, self.y / mag, self.z / mag))
     def __eq__(self, v: 'vector'):
         return (math.isclose(self.x, v.x, rel_tol = 0, abs_tol = err_tol)
                 and math.isclose(self.y, v.y, rel_tol = 0, abs_tol = err_tol)

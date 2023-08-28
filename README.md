@@ -16,6 +16,9 @@ Vector, Ray, Intersection defined in vector.py
 | 9     | Cone                      | Line, Circle              | Completed     |
 | 10    | Prism (Parallelogram)     | Quadrilateral             | Completed     |
 
+The scene is made using Tkinter.
+Arrow keys = move right/left, forwards/backwards
+keypress = angle right/left, up/down
 
 
 

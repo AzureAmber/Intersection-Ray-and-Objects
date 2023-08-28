@@ -16,19 +16,55 @@ class camera:
         self.rotv = rotv
         self.tilt = tilt
     def update_x(self, v: float):
-        new_x = self.position.getx() + v
-        self.position.setx(new_x)
+        m_roth = matrix([math.cos(self.roth), 0.0, -1.0 * math.sin(self.roth), 0.0],
+                        [0.0, 1.0, 0.0, 0.0],
+                        [math.sin(self.roth), 0.0, math.cos(self.roth), 0.0],
+                        [0.0, 0.0, 0.0, 1.0])
+        m_rotv = matrix([1.0, 0.0, 0.0, 0.0],
+                        [0.0, math.cos(self.rotv), -1.0 * math.sin(self.rotv), 0.0],
+                        [0.0, math.sin(self.rotv), math.cos(self.rotv), 0.0],
+                        [0.0, 0.0, 0.0, 1.0])
+        m_tilt = matrix([math.cos(self.tilt), math.sin(self.tilt), 0.0, 0.0],
+                        [-1.0 * math.sin(self.tilt), math.cos(self.tilt), 0.0, 0.0],
+                        [0.0, 0.0, 1.0, 0.0],
+                        [0.0, 0.0, 0.0, 1.0])
+        x_dir = vector(1.0, 0.0, 0.0).matmult(m_tilt * m_rotv * m_roth) * v
+        self.position = self.position + x_dir
     def update_y(self, v: float):
-        new_y = self.position.gety() + v
-        self.position.sety(new_y)
+        m_roth = matrix([math.cos(self.roth), 0.0, -1.0 * math.sin(self.roth), 0.0],
+                        [0.0, 1.0, 0.0, 0.0],
+                        [math.sin(self.roth), 0.0, math.cos(self.roth), 0.0],
+                        [0.0, 0.0, 0.0, 1.0])
+        m_rotv = matrix([1.0, 0.0, 0.0, 0.0],
+                        [0.0, math.cos(self.rotv), -1.0 * math.sin(self.rotv), 0.0],
+                        [0.0, math.sin(self.rotv), math.cos(self.rotv), 0.0],
+                        [0.0, 0.0, 0.0, 1.0])
+        m_tilt = matrix([math.cos(self.tilt), math.sin(self.tilt), 0.0, 0.0],
+                        [-1.0 * math.sin(self.tilt), math.cos(self.tilt), 0.0, 0.0],
+                        [0.0, 0.0, 1.0, 0.0],
+                        [0.0, 0.0, 0.0, 1.0])
+        y_dir = vector(0.0, 1.0, 0.0).matmult(m_tilt * m_rotv * m_roth) * v
+        self.position = self.position + y_dir
     def update_z(self, v: float):
-        new_z = self.position.getz() + v
-        self.position.setz(new_z)
+        m_roth = matrix([math.cos(self.roth), 0.0, -1.0 * math.sin(self.roth), 0.0],
+                        [0.0, 1.0, 0.0, 0.0],
+                        [math.sin(self.roth), 0.0, math.cos(self.roth), 0.0],
+                        [0.0, 0.0, 0.0, 1.0])
+        m_rotv = matrix([1.0, 0.0, 0.0, 0.0],
+                        [0.0, math.cos(self.rotv), -1.0 * math.sin(self.rotv), 0.0],
+                        [0.0, math.sin(self.rotv), math.cos(self.rotv), 0.0],
+                        [0.0, 0.0, 0.0, 1.0])
+        m_tilt = matrix([math.cos(self.tilt), math.sin(self.tilt), 0.0, 0.0],
+                        [-1.0 * math.sin(self.tilt), math.cos(self.tilt), 0.0, 0.0],
+                        [0.0, 0.0, 1.0, 0.0],
+                        [0.0, 0.0, 0.0, 1.0])
+        z_dir = vector(0.0, 0.0, -1.0).matmult(m_tilt * m_rotv * m_roth) * v
+        self.position = self.position + z_dir
     def update_roth(self, v: float):
         self.roth = self.roth + v
     def update_rotv(self, v: float):
         self.rotv = self.rotv + v
-    def update_tilt(self, v: float):
+    def update_tilt(self, v: float):    
         self.tilt = self.tilt + v
     # apply the perspective projection matrix
     def perspective(self, v: vector):
@@ -54,12 +90,17 @@ class camera:
     # returns the screen coordinates of vector v after perspective projection
     def screen_coord(self, v: vector):
         temp = self.perspective(v)
-        temp_clip = temp / temp.getw()
-        # clip if vector is outside camera view
-        if ((temp_clip.getx() >= -1.0 and temp_clip.getx() <= 1.0)
-            and (temp_clip.gety() >= -1.0 and temp_clip.gety() <= 1.0)
-            and (temp_clip.getz() >= -1.0 and temp_clip.getz() <= 1.0)):
-            return( vector((1 + temp_clip.getx()) * self.width / 2.0, (1 - temp_clip.gety()) * self.height / 2.0, temp_clip.getz()) )
+        if (temp.getw() > 0):
+            temp_clip = temp / temp.getw()
+            # clip if vector is outside camera view
+            if ((temp_clip.getx() >= -1.0 and temp_clip.getx() <= 1.0)
+                and (temp_clip.gety() >= -1.0 and temp_clip.gety() <= 1.0)
+                and (temp_clip.getz() >= -1.0 and temp_clip.getz() <= 1.0)):
+                result = vector((1 + temp_clip.getx()) * self.width / 2.0, (1 - temp_clip.gety()) * self.height / 2.0, temp_clip.getz())
+                result.setw(temp.getw())
+                return(result)
+            else:
+                return None
         else:
             return None
 
