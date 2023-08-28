@@ -35,6 +35,12 @@ class vector:
         return self.z
     def getw(self):
         return self.w
+    def setx(self, value: float):
+        self.x = value
+    def sety(self, value: float):
+        self.y = value
+    def setz(self, value: float):
+        self.z = value
     def setw(self, value: float):
         self.w = value
     def dot(self, v: 'vector'):
