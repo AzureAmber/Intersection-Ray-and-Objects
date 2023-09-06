@@ -82,6 +82,12 @@ def key_press(event):
     elif (event.keysym == 's'):
         x.update_rotv(-1.0 * 5 * math.pi / 180)
         update()
+    elif (event.keysym == 'q'):
+        x.update_tilt(-1.0 * 5 * math.pi / 180)
+        update()
+    elif (event.keysym == 'e'):
+        x.update_tilt(5 * math.pi / 180)
+        update()
 
 root.bind("<Left>", left)
 root.bind("<Right>", right)
